@@ -1,0 +1,1 @@
+Requires Python3, Open CV, numpy
