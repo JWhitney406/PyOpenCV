@@ -39,11 +39,6 @@ while(True):
     
     for i in range(0, y):
         for j in range(0, x):
-            # if abs(hsv[i][j][0] - clickColor[0]) > COLOR_THRESH & abs(hsv[i][j][1] - clickColor[1]) > COLOR_THRESH & abs(hsv[i][j][2] - clickColor[2]) > COLOR_THRESH:
-            #     hsvObject[i][j] = [255,255,255]
-            # else:
-            #     hsvObject[i][j] = [0,0,0]
-                
             blurred_pixel = int(int(last_frame[i, j])*.8 + int(gray[i, j])*.2)
             motion_pixel = min(255, 2*int(abs(int(gray[i, j])-int(last_frame[i, j]))))
             
@@ -56,11 +51,10 @@ while(True):
             gray[i, j] = motion_pixel
             gray2[i,j] = motion_pixel
 
-    # edges = cv2.Canny( gray, 100, 200)
-    # edges2 = cv2.Canny(gray, 100, 200)
-
     opening = cv2.morphologyEx(gray, cv2.MORPH_OPEN, kernel)
     dilation = cv2.dilate(opening,kernel,iterations = 3)
+    eroded = cv2.erode(hsvObject, kernel, iterations = 1)
+    dilationhsv = cv2.dilate(hsvObject,kernel,iterations = 3)
     cont, contours, hierarchy = cv2.findContours(dilation, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     frame = cv2.resize(frame,(x, y), interpolation = cv2.INTER_CUBIC)
     for contour in contours:
@@ -72,7 +66,6 @@ while(True):
     cv2.imshow('diff',cv2.resize(gray2,(x*5, y*5), interpolation = cv2.INTER_CUBIC))
     cv2.imshow('hsv',cv2.resize(hsv,(x*5, y*5), interpolation = cv2.INTER_CUBIC))
     cv2.imshow('last',cv2.resize(last_frame,(x*5, y*5), interpolation = cv2.INTER_CUBIC))
-#    cv2.imshow('edges',cv2.resize(edges,(x*5, y*5), interpolation = cv2.INTER_CUBIC)) 
     cv2.imshow('Contours',cv2.resize((255-cont),(x*5, y*5), interpolation = cv2.INTER_CUBIC))
     cv2.imshow('Original', cv2.resize(frame,(x*5, y*5), interpolation = cv2.INTER_CUBIC))
     if firstTime:
